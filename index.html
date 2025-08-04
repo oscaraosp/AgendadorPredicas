@@ -256,6 +256,9 @@
         .btn-eliminar { background-color: #d32f2f; }
         .btn-eliminar:hover { background-color: #b71c1c; }
         
+        .btn-editar { background-color: #0d47a1; }
+        .btn-editar:hover { background-color: #00227c; }
+
         .btn-link {
             background-color: transparent;
             color: var(--primary-dark);
@@ -414,6 +417,7 @@
         <div id="biblioteca" class="tab-content">
             <h2 class="section-header">Biblioteca de Predicaciones</h2>
             <form id="bibliotecaForm">
+                <input type="hidden" id="editSermonIndex" value="-1" />
                 <div class="form-group">
                     <label for="sermonTema">Tema del sermón</label>
                     <input type="text" id="sermonTema" placeholder="Ej. El Buen Samaritano" required />
@@ -423,7 +427,7 @@
                     <input type="file" id="sermonDocumento" accept=".pdf,.doc,.docx,.txt" />
                     <small>Se recomienda usar archivos de formato PDF, TXT o imágenes para una mejor visualización.</small>
                 </div>
-                <button type="submit" class="primary-btn"><i class="fas fa-folder-plus"></i> Guardar en biblioteca</button>
+                <button type="submit" id="bibliotecaSubmitBtn" class="primary-btn"><i class="fas fa-folder-plus"></i> Guardar en biblioteca</button>
             </form>
             <div id="lista-biblioteca" class="card-list"></div>
         </div>
@@ -431,6 +435,7 @@
         <div id="agendar" class="tab-content">
             <h2 class="section-header">Agendar una Predicación</h2>
             <form id="agendaForm">
+                <input type="hidden" id="editAgendaIndex" value="-1" />
                 <div class="form-group">
                     <label for="iglesia">Iglesia</label>
                     <input type="text" id="iglesia" placeholder="Nombre de la Iglesia" required />
@@ -458,7 +463,7 @@
                     <label for="fecha">Fecha y Hora</label>
                     <input type="datetime-local" id="fecha" required />
                 </div>
-                <button type="submit" class="primary-btn"><i class="fas fa-calendar-plus"></i> Programar predicación</button>
+                <button type="submit" id="agendaSubmitBtn" class="primary-btn"><i class="fas fa-calendar-plus"></i> Programar predicación</button>
             </form>
         </div>
 
@@ -490,7 +495,12 @@
             const listaBiblioteca = document.getElementById('lista-biblioteca');
             const listaPredicaciones = document.getElementById('lista-predicaciones');
             const selectPredicacion = document.getElementById('predicacionSeleccionada');
-            
+            const bibliotecaSubmitBtn = document.getElementById('bibliotecaSubmitBtn');
+            const agendaSubmitBtn = document.getElementById('agendaSubmitBtn');
+
+            const editSermonIndex = document.getElementById('editSermonIndex');
+            const editAgendaIndex = document.getElementById('editAgendaIndex');
+
             const fileModal = document.getElementById('fileModal');
             const fileViewer = document.getElementById('file-viewer');
             const modalTitle = document.getElementById('modal-title');
@@ -549,6 +559,7 @@
                                 </p>
                             </div>
                             <div class="acciones">
+                                <button class="btn-accion btn-editar" data-index="${index}"><i class="fas fa-edit"></i> Editar</button>
                                 <button class="btn-accion btn-eliminar" data-index="${index}"><i class="fas fa-trash"></i> Eliminar</button>
                             </div>
                         `;
@@ -608,13 +619,14 @@
                             </p>
                         </div>
                         <div class="acciones">
+                            <button class="btn-accion btn-editar" data-index="${index}"><i class="fas fa-edit"></i> Editar</button>
                             <button class="btn-accion btn-finalizar" data-index="${index}"><i class="fas fa-check"></i> Finalizado</button>
                         </div>
                     `;
                     listaPredicaciones.appendChild(card);
                 });
             }
-
+            
             function programarNotificacion(pred) {
                 if (!('Notification' in window) || Notification.permission !== 'granted') {
                     console.log("Notificaciones no soportadas o permiso no concedido.");
@@ -651,43 +663,57 @@
                 });
             });
 
-            // Evento para guardar un nuevo sermón en la biblioteca
+            // Evento para guardar o editar un sermón en la biblioteca
             bibliotecaForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const tema = document.getElementById('sermonTema').value.trim();
                 const archivo = document.getElementById('sermonDocumento').files[0];
+                const index = parseInt(editSermonIndex.value);
                 
                 if (!tema) {
                     alert('Por favor, ingresa el tema del sermón.');
                     return;
                 }
                 
-                const nuevoSermon = { tema: tema, documento: null, nombreArchivo: null };
+                const guardarSermon = (dataUrl, fileName) => {
+                    if (index !== -1) {
+                        // Editar sermón existente
+                        biblioteca[index].tema = tema;
+                        if (dataUrl) {
+                            biblioteca[index].documento = dataUrl;
+                            biblioteca[index].nombreArchivo = fileName;
+                        }
+                        alert(`El sermón "${tema}" se ha actualizado exitosamente.`);
+                    } else {
+                        // Guardar nuevo sermón
+                        const nuevoSermon = { tema: tema, documento: dataUrl, nombreArchivo: fileName };
+                        biblioteca.push(nuevoSermon);
+                        alert(`El sermón "${tema}" se ha guardado exitosamente.`);
+                    }
+                    guardarDatos();
+                    renderizarBiblioteca();
+                    bibliotecaForm.reset();
+                    editSermonIndex.value = -1;
+                    bibliotecaSubmitBtn.innerHTML = `<i class="fas fa-folder-plus"></i> Guardar en biblioteca`;
+                };
 
                 if (archivo) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        nuevoSermon.documento = e.target.result;
-                        nuevoSermon.nombreArchivo = archivo.name;
-                        biblioteca.push(nuevoSermon);
-                        guardarDatos();
-                        renderizarBiblioteca();
-                        bibliotecaForm.reset();
-                        alert(`El sermón "${tema}" con el archivo adjunto se ha guardado exitosamente.`);
+                        guardarSermon(e.target.result, archivo.name);
                     };
                     reader.readAsDataURL(archivo);
                 } else {
-                    biblioteca.push(nuevoSermon);
-                    guardarDatos();
-                    renderizarBiblioteca();
-                    bibliotecaForm.reset();
-                    alert(`El sermón "${tema}" se ha guardado exitosamente sin archivo adjunto.`);
+                    guardarSermon(index !== -1 ? biblioteca[index].documento : null, index !== -1 ? biblioteca[index].nombreArchivo : null);
                 }
             });
 
             // Evento para los clics en la lista de la biblioteca
             listaBiblioteca.addEventListener('click', (e) => {
                 const button = e.target.closest('.btn-eliminar');
+                const editButton = e.target.closest('.btn-editar');
+                const viewLink = e.target.closest('.view-file-link');
+
                 if (button) {
                     const index = button.dataset.index;
                     if (confirm(`¿Estás seguro de que quieres eliminar el sermón "${biblioteca[index].tema}"?`)) {
@@ -695,9 +721,15 @@
                         guardarDatos();
                         renderizarBiblioteca();
                     }
-                }
-                const viewLink = e.target.closest('.view-file-link');
-                if (viewLink) {
+                } else if (editButton) {
+                    const index = editButton.dataset.index;
+                    const sermonToEdit = biblioteca[index];
+                    document.getElementById('sermonTema').value = sermonToEdit.tema;
+                    editSermonIndex.value = index;
+                    bibliotecaSubmitBtn.innerHTML = `<i class="fas fa-save"></i> Actualizar sermón`;
+                    document.getElementById('sermonDocumento').value = '';
+                    document.querySelector('.tab-button[data-tab="biblioteca"]').click();
+                } else if (viewLink) {
                     e.preventDefault();
                     const documentUrl = viewLink.dataset.url;
                     const fileName = viewLink.dataset.name;
@@ -708,28 +740,41 @@
             // Evento para los clics en la lista de predicaciones
             listaPredicaciones.addEventListener('click', (e) => {
                 const viewLink = e.target.closest('.view-file-link');
+                const finalizadoBtn = e.target.closest('.btn-finalizar');
+                const editButton = e.target.closest('.btn-editar');
+
                 if (viewLink) {
                     e.preventDefault();
                     const documentUrl = viewLink.dataset.url;
                     const fileName = viewLink.dataset.name;
                     openModal(documentUrl, fileName);
-                }
-                const finalizadoBtn = e.target.closest('.btn-finalizar');
-                if (finalizadoBtn) {
+                } else if (finalizadoBtn) {
                     const index = finalizadoBtn.dataset.index;
                     if (confirm(`¿Estás seguro de que quieres marcar como finalizada la predicación del tema "${agenda[index].sermon.tema}" en la iglesia "${agenda[index].iglesia}"?`)) {
                         agenda.splice(index, 1);
                         guardarDatos();
                         renderizarAgenda();
                     }
+                } else if (editButton) {
+                    const index = editButton.dataset.index;
+                    const predToEdit = agenda[index];
+                    document.getElementById('iglesia').value = predToEdit.iglesia;
+                    document.getElementById('direccion').value = predToEdit.direccion;
+                    document.getElementById('tipoCulto').value = predToEdit.tipoCulto;
+                    document.getElementById('fecha').value = predToEdit.fecha;
+                    selectPredicacion.value = biblioteca.findIndex(s => s.tema === predToEdit.sermon.tema);
+                    editAgendaIndex.value = index;
+                    agendaSubmitBtn.innerHTML = `<i class="fas fa-save"></i> Actualizar predicación`;
+                    document.querySelector('.tab-button[data-tab="agendar"]').click();
                 }
             });
 
-            // Evento para programar una nueva predicación
+            // Evento para guardar o editar una nueva predicación
             agendaForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const sermonIndex = selectPredicacion.value;
                 const tipoCulto = document.getElementById('tipoCulto').value;
+                const index = parseInt(editAgendaIndex.value);
                 
                 if (sermonIndex === "" || !agendaForm.iglesia.value || !agendaForm.direccion.value || !agendaForm.fecha.value || tipoCulto === "") {
                     alert('Por favor, completa todos los campos.');
@@ -745,13 +790,24 @@
                     sermon: sermonSeleccionado
                 };
                 
-                agenda.push(nuevaPred);
+                if (index !== -1) {
+                    // Editar predicación existente
+                    agenda[index] = nuevaPred;
+                    alert(`La predicación en "${nuevaPred.iglesia}" ha sido actualizada.`);
+                } else {
+                    // Guardar nueva predicación
+                    agenda.push(nuevaPred);
+                    alert(`Predicación para "${nuevaPred.iglesia}" programada exitosamente.`);
+                }
+
                 guardarDatos();
                 programarNotificacion(nuevaPred);
                 renderizarAgenda();
                 agendaForm.reset();
                 selectPredicacion.value = "";
                 document.getElementById('tipoCulto').value = "";
+                editAgendaIndex.value = -1;
+                agendaSubmitBtn.innerHTML = `<i class="fas fa-calendar-plus"></i> Programar predicación`;
                 
                 document.querySelector('.tab-button[data-tab="proximas"]').click();
             });
