@@ -563,8 +563,20 @@
             const STORAGE_KEY_BIBLIOTECA = 'biblioteca_predicaciones';
             const STORAGE_KEY_AGENDA = 'predicaciones_programadas';
 
+            const MAX_LOCAL_STORAGE_SIZE = 4 * 1024 * 1024; // 4MB como umbral de seguridad
+
             let biblioteca = JSON.parse(localStorage.getItem(STORAGE_KEY_BIBLIOTECA)) || [];
             let agenda = JSON.parse(localStorage.getItem(STORAGE_KEY_AGENDA)) || [];
+
+            function getStorageSize() {
+                let total = 0;
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        total += localStorage[key].length;
+                    }
+                }
+                return total * 2; // Estimar el tamaño en bytes
+            }
 
             function guardarDatos() {
                 localStorage.setItem(STORAGE_KEY_BIBLIOTECA, JSON.stringify(biblioteca));
@@ -810,12 +822,26 @@
 
                     const archivo = filesToProcess.shift();
                     const reader = new FileReader();
+
                     reader.onload = (e) => {
-                        processedFiles.push({
-                            documento: e.target.result,
-                            nombreArchivo: archivo.name
-                        });
-                        processFiles(filesToProcess, processedFiles);
+                        const nuevaEntrada = JSON.stringify(biblioteca.concat([{
+                            tema: tema,
+                            himnoInicial: himnoInicial,
+                            lecturaClave: lecturaClave,
+                            himnoFinal: himnoFinal,
+                            archivos: [{ documento: e.target.result, nombreArchivo: archivo.name }]
+                        }]));
+
+                        if (getStorageSize() + nuevaEntrada.length * 2 > MAX_LOCAL_STORAGE_SIZE) {
+                            alert(`Advertencia: El archivo "${archivo.name}" es demasiado grande para guardar. El sermón se guardará sin este archivo para evitar que la aplicación se bloquee. Puedes añadirlo más tarde.`);
+                            processFiles(filesToProcess, processedFiles);
+                        } else {
+                            processedFiles.push({
+                                documento: e.target.result,
+                                nombreArchivo: archivo.name
+                            });
+                            processFiles(filesToProcess, processedFiles);
+                        }
                     };
                     reader.readAsDataURL(archivo);
                 };
