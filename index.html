@@ -249,6 +249,10 @@
         .btn-accion:active {
             transform: scale(0.98);
         }
+        
+        .btn-accion i {
+            margin-right: 0.5rem;
+        }
 
         .btn-finalizar { background-color: #d32f2f; }
         .btn-finalizar:hover { background-color: #b71c1c; }
@@ -271,6 +275,31 @@
         
         .btn-link:hover {
             color: var(--primary);
+        }
+        
+        .document-list {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .document-item {
+            background: var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .document-item .btn-eliminar-doc {
+            background: none;
+            border: none;
+            color: #d32f2f;
+            font-size: 1rem;
+            cursor: pointer;
         }
 
         .empty-state {
@@ -423,9 +452,13 @@
                     <input type="text" id="sermonTema" placeholder="Ej. El Buen Samaritano" required />
                 </div>
                 <div class="form-group">
-                    <label for="sermonDocumento">Adjuntar documento</label>
-                    <input type="file" id="sermonDocumento" accept=".pdf,.doc,.docx,.txt" />
-                    <small>Se recomienda usar archivos de formato PDF, TXT o imágenes para una mejor visualización.</small>
+                    <label for="sermonDocumento">Adjuntar documentos</label>
+                    <input type="file" id="sermonDocumento" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" multiple />
+                    <small>Puedes seleccionar múltiples archivos. Se recomienda usar PDF, TXT o imágenes para una mejor visualización.</small>
+                </div>
+                <div id="archivos-actuales" style="margin-top: 1rem; display: none;">
+                    <p><strong>Archivos actuales:</strong></p>
+                    <div id="lista-archivos-existentes" class="document-list"></div>
                 </div>
                 <button type="submit" id="bibliotecaSubmitBtn" class="primary-btn"><i class="fas fa-folder-plus"></i> Guardar en biblioteca</button>
             </form>
@@ -501,6 +534,9 @@
             const editSermonIndex = document.getElementById('editSermonIndex');
             const editAgendaIndex = document.getElementById('editAgendaIndex');
 
+            const archivosActualesDiv = document.getElementById('archivos-actuales');
+            const listaArchivosExistentes = document.getElementById('lista-archivos-existentes');
+
             const fileModal = document.getElementById('fileModal');
             const fileViewer = document.getElementById('file-viewer');
             const modalTitle = document.getElementById('modal-title');
@@ -548,15 +584,27 @@
                     biblioteca.forEach((sermon, index) => {
                         const card = document.createElement('div');
                         card.className = 'card';
+                        let documentosHtml = '';
+                        if (sermon.archivos && sermon.archivos.length > 0) {
+                            documentosHtml = `<p><strong>Documentos:</strong></p><div class="document-list">`;
+                            sermon.archivos.forEach(archivo => {
+                                documentosHtml += `
+                                    <div class="document-item">
+                                        <a href="#" class="btn-link view-file-link" data-url="${archivo.documento}" data-name="${archivo.nombreArchivo}">
+                                            <i class="fas fa-file-alt"></i> ${archivo.nombreArchivo}
+                                        </a>
+                                    </div>
+                                `;
+                            });
+                            documentosHtml += `</div>`;
+                        } else {
+                            documentosHtml = `<p><strong>Documentos:</strong> No adjuntados</p>`;
+                        }
+                        
                         card.innerHTML = `
                             <h3>${sermon.tema}</h3>
                             <div class="info">
-                                <i class="fas fa-file-alt"></i>
-                                <p><strong>Documento:</strong>
-                                    ${sermon.documento
-                                        ? `<a href="#" class="btn-link view-file-link" data-url="${sermon.documento}" data-name="${sermon.nombreArchivo}">Ver ${sermon.nombreArchivo}</a>`
-                                        : 'No adjuntado'}
-                                </p>
+                                ${documentosHtml}
                             </div>
                             <div class="acciones">
                                 <button class="btn-accion btn-editar" data-index="${index}"><i class="fas fa-edit"></i> Editar</button>
@@ -600,6 +648,23 @@
                         tipoCultoIcon = '<i class="fas fa-question-circle"></i>';
                     }
 
+                    let documentosHtml = '';
+                    if (pred.sermon.archivos && pred.sermon.archivos.length > 0) {
+                        documentosHtml = `<p><strong>Documentos:</strong></p><div class="document-list">`;
+                        pred.sermon.archivos.forEach(archivo => {
+                            documentosHtml += `
+                                <div class="document-item">
+                                    <a href="#" class="btn-link view-file-link" data-url="${archivo.documento}" data-name="${archivo.nombreArchivo}">
+                                        <i class="fas fa-file-alt"></i> ${archivo.nombreArchivo}
+                                    </a>
+                                </div>
+                            `;
+                        });
+                        documentosHtml += `</div>`;
+                    } else {
+                        documentosHtml = `<p><strong>Documentos:</strong> No adjuntados</p>`;
+                    }
+
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
@@ -611,12 +676,7 @@
                             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                         })}</p></div>
                         <div class="info">
-                            <i class="fas fa-file-alt"></i>
-                            <p><strong>Documento:</strong>
-                                ${pred.sermon.documento
-                                    ? `<a href="#" class="btn-link view-file-link" data-url="${pred.sermon.documento}" data-name="${pred.sermon.nombreArchivo}">Ver ${pred.sermon.nombreArchivo}</a>`
-                                    : 'No adjuntado'}
-                            </p>
+                            ${documentosHtml}
                         </div>
                         <div class="acciones">
                             <button class="btn-accion btn-editar" data-index="${index}"><i class="fas fa-edit"></i> Editar</button>
@@ -644,6 +704,14 @@
                     }, tiempoAntes);
                 }
             }
+
+            function resetBibliotecaForm() {
+                bibliotecaForm.reset();
+                editSermonIndex.value = -1;
+                bibliotecaSubmitBtn.innerHTML = `<i class="fas fa-folder-plus"></i> Guardar en biblioteca`;
+                archivosActualesDiv.style.display = 'none';
+                listaArchivosExistentes.innerHTML = '';
+            }
             
             // Lógica para cambiar de pestaña
             tabs.forEach(tab => {
@@ -659,6 +727,12 @@
                         renderizarAgenda();
                     } else if (tab.dataset.tab === 'biblioteca') {
                         renderizarBiblioteca();
+                        resetBibliotecaForm();
+                    } else if (tab.dataset.tab === 'agendar') {
+                        // Resetea el formulario de agendar cuando se cambia a la pestaña
+                        agendaForm.reset();
+                        editAgendaIndex.value = -1;
+                        agendaSubmitBtn.innerHTML = `<i class="fas fa-calendar-plus"></i> Programar predicación`;
                     }
                 });
             });
@@ -667,7 +741,7 @@
             bibliotecaForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const tema = document.getElementById('sermonTema').value.trim();
-                const archivo = document.getElementById('sermonDocumento').files[0];
+                const archivosNuevos = document.getElementById('sermonDocumento').files;
                 const index = parseInt(editSermonIndex.value);
                 
                 if (!tema) {
@@ -675,37 +749,47 @@
                     return;
                 }
                 
-                const guardarSermon = (dataUrl, fileName) => {
-                    if (index !== -1) {
-                        // Editar sermón existente
-                        biblioteca[index].tema = tema;
-                        if (dataUrl) {
-                            biblioteca[index].documento = dataUrl;
-                            biblioteca[index].nombreArchivo = fileName;
-                        }
-                        alert(`El sermón "${tema}" se ha actualizado exitosamente.`);
-                    } else {
-                        // Guardar nuevo sermón
-                        const nuevoSermon = { tema: tema, documento: dataUrl, nombreArchivo: fileName };
-                        biblioteca.push(nuevoSermon);
-                        alert(`El sermón "${tema}" se ha guardado exitosamente.`);
-                    }
-                    guardarDatos();
-                    renderizarBiblioteca();
-                    bibliotecaForm.reset();
-                    editSermonIndex.value = -1;
-                    bibliotecaSubmitBtn.innerHTML = `<i class="fas fa-folder-plus"></i> Guardar en biblioteca`;
-                };
+                let archivosExistentes = [];
+                if (index !== -1) {
+                    archivosExistentes = biblioteca[index].archivos || [];
+                }
+                
+                let archivosAprocesar = Array.from(archivosNuevos);
+                
+                const processFiles = (filesToProcess, processedFiles = []) => {
+                    if (filesToProcess.length === 0) {
+                        const nuevoSermon = { 
+                            tema: tema, 
+                            archivos: archivosExistentes.concat(processedFiles)
+                        };
 
-                if (archivo) {
+                        if (index !== -1) {
+                            biblioteca[index] = nuevoSermon;
+                            alert(`El sermón "${tema}" se ha actualizado exitosamente.`);
+                        } else {
+                            biblioteca.push(nuevoSermon);
+                            alert(`El sermón "${tema}" se ha guardado exitosamente.`);
+                        }
+                        
+                        guardarDatos();
+                        renderizarBiblioteca();
+                        resetBibliotecaForm();
+                        return;
+                    }
+
+                    const archivo = filesToProcess.shift();
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        guardarSermon(e.target.result, archivo.name);
+                        processedFiles.push({
+                            documento: e.target.result,
+                            nombreArchivo: archivo.name
+                        });
+                        processFiles(filesToProcess, processedFiles);
                     };
                     reader.readAsDataURL(archivo);
-                } else {
-                    guardarSermon(index !== -1 ? biblioteca[index].documento : null, index !== -1 ? biblioteca[index].nombreArchivo : null);
-                }
+                };
+
+                processFiles(archivosAprocesar);
             });
 
             // Evento para los clics en la lista de la biblioteca
@@ -724,16 +808,64 @@
                 } else if (editButton) {
                     const index = editButton.dataset.index;
                     const sermonToEdit = biblioteca[index];
+                    
                     document.getElementById('sermonTema').value = sermonToEdit.tema;
                     editSermonIndex.value = index;
                     bibliotecaSubmitBtn.innerHTML = `<i class="fas fa-save"></i> Actualizar sermón`;
                     document.getElementById('sermonDocumento').value = '';
+                    
+                    listaArchivosExistentes.innerHTML = '';
+                    if (sermonToEdit.archivos && sermonToEdit.archivos.length > 0) {
+                        sermonToEdit.archivos.forEach((archivo, fileIndex) => {
+                            const docItem = document.createElement('div');
+                            docItem.className = 'document-item';
+                            docItem.innerHTML = `
+                                <span>${archivo.nombreArchivo}</span>
+                                <button class="btn-eliminar-doc" data-sermon-index="${index}" data-file-index="${fileIndex}">&times;</button>
+                            `;
+                            listaArchivosExistentes.appendChild(docItem);
+                        });
+                        archivosActualesDiv.style.display = 'block';
+                    } else {
+                        archivosActualesDiv.style.display = 'none';
+                    }
+                    
                     document.querySelector('.tab-button[data-tab="biblioteca"]').click();
                 } else if (viewLink) {
                     e.preventDefault();
                     const documentUrl = viewLink.dataset.url;
                     const fileName = viewLink.dataset.name;
                     openModal(documentUrl, fileName);
+                }
+            });
+
+            // Evento para eliminar un documento individual al editar
+            listaArchivosExistentes.addEventListener('click', (e) => {
+                const deleteButton = e.target.closest('.btn-eliminar-doc');
+                if (deleteButton) {
+                    const sermonIndex = parseInt(deleteButton.dataset.sermonIndex);
+                    const fileIndex = parseInt(deleteButton.dataset.file-index);
+                    
+                    if (confirm(`¿Estás seguro de que quieres eliminar el documento "${biblioteca[sermonIndex].archivos[fileIndex].nombreArchivo}"?`)) {
+                        biblioteca[sermonIndex].archivos.splice(fileIndex, 1);
+                        guardarDatos();
+                        // Volver a renderizar la lista de archivos existentes
+                        const sermonToEdit = biblioteca[sermonIndex];
+                        listaArchivosExistentes.innerHTML = '';
+                        if (sermonToEdit.archivos && sermonToEdit.archivos.length > 0) {
+                            sermonToEdit.archivos.forEach((archivo, newFileIndex) => {
+                                const docItem = document.createElement('div');
+                                docItem.className = 'document-item';
+                                docItem.innerHTML = `
+                                    <span>${archivo.nombreArchivo}</span>
+                                    <button class="btn-eliminar-doc" data-sermon-index="${sermonIndex}" data-file-index="${newFileIndex}">&times;</button>
+                                `;
+                                listaArchivosExistentes.appendChild(docItem);
+                            });
+                        } else {
+                            archivosActualesDiv.style.display = 'none';
+                        }
+                    }
                 }
             });
             
@@ -791,11 +923,9 @@
                 };
                 
                 if (index !== -1) {
-                    // Editar predicación existente
                     agenda[index] = nuevaPred;
                     alert(`La predicación en "${nuevaPred.iglesia}" ha sido actualizada.`);
                 } else {
-                    // Guardar nueva predicación
                     agenda.push(nuevaPred);
                     alert(`Predicación para "${nuevaPred.iglesia}" programada exitosamente.`);
                 }
