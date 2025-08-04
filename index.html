@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agenda de Predicaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff9800; /* Naranja principal */
+            --primary-dark: #f57c00; /* Naranja más oscuro para hover */
+            --secondary: #ef6c00; /* Naranja más fuerte */
+            --bg: #fdf5e6; /* Fondo blanco-crema */
+            --card-bg: #ffffff;
+            --text-main: #333;
+            --text-secondary: #666;
+            --border: #f0e6d2;
+            --radius: 0.75rem;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text-main);
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transform: scale(1);
+            transition: transform 0.5s ease-out;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header .logo {
+            max-height: 150px;
+            width: auto;
+            margin-bottom: 0rem;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--secondary);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        h1 i {
+            color: var(--primary-dark);
+            font-size: 3rem;
+        }
+
+        /* Estilos para las pestañas */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tab-button.active {
+            color: var(--primary-dark);
+            border-bottom: 3px solid var(--primary);
+            margin-bottom: -2px;
+            transform: translateY(-2px);
+        }
+        
+        .tab-button i {
+            margin-right: 0.5rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section-header {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        form {
+            display: grid;
+            gap: 1.5rem;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: var(--bg);
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
+        }
+
+        button.primary-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button.primary-btn:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 6px 15px rgba(255, 152, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .card-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .card {
+            background: var(--bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+            border-left: 5px solid var(--primary-dark);
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+        
+        .card p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+        
+        .card strong {
+            color: var(--text-main);
+        }
+
+        .card .info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card .info i {
+            color: var(--secondary);
+            width: 20px;
+            text-align: center;
+        }
+        
+        .card .acciones {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .btn-accion {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background 0.3s ease, transform 0.2s;
+            border: none;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-accion:active {
+            transform: scale(0.98);
+        }
+
+        .btn-finalizar { background-color: #d32f2f; }
+        .btn-finalizar:hover { background-color: #b71c1c; }
+
+        .btn-eliminar { background-color: #d32f2f; }
+        .btn-eliminar:hover { background-color: #b71c1c; }
+        
+        .btn-link {
+            background-color: transparent;
+            color: var(--primary-dark);
+            border: none;
+            text-decoration: underline;
+            padding: 0;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-link:hover {
+            color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            padding: 2rem 0;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border);
+        }
+
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        /* Estilos del Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 800px;
+            height: 90%;
+            max-height: 90vh;
+            box-shadow: var(--shadow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .modal-header .modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .modal-header .modal-actions button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-secondary);
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-body {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        #file-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .tab-button {
+                flex-grow: 1;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="logosinfondo.png" alt="Logo" class="logo">
+            <h1><i class="fas fa-cross"></i>Agenda de Predicaciones</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="proximas"><i class="fas fa-calendar-check"></i> Próximas</button>
+            <button class="tab-button" data-tab="biblioteca"><i class="fas fa-book-open"></i> Biblioteca</button>
+            <button class="tab-button" data-tab="agendar"><i class="fas fa-plus-circle"></i> Agendar</button>
+        </div>
+
+        <div id="proximas" class="tab-content active">
+            <h2 class="section-header">Próximas Predicaciones</h2>
+            <div id="lista-predicaciones" class="card-list"></div>
+        </div>
+
+        <div id="biblioteca" class="tab-content">
+            <h2 class="section-header">Biblioteca de Predicaciones</h2>
+            <form id="bibliotecaForm">
+                <div class="form-group">
+                    <label for="sermonTema">Tema del sermón</label>
+                    <input type="text" id="sermonTema" placeholder="Ej. El Buen Samaritano" required />
+                </div>
+                <div class="form-group">
+                    <label for="sermonDocumento">Adjuntar documento</label>
+                    <input type="file" id="sermonDocumento" accept=".pdf,.doc,.docx,.txt" />
+                    <small>Se recomienda usar archivos de formato PDF, TXT o imágenes para una mejor visualización.</small>
+                </div>
+                <button type="submit" class="primary-btn"><i class="fas fa-folder-plus"></i> Guardar en biblioteca</button>
+            </form>
+            <div id="lista-biblioteca" class="card-list"></div>
+        </div>
+
+        <div id="agendar" class="tab-content">
+            <h2 class="section-header">Agendar una Predicación</h2>
+            <form id="agendaForm">
+                <div class="form-group">
+                    <label for="iglesia">Iglesia</label>
+                    <input type="text" id="iglesia" placeholder="Nombre de la Iglesia" required />
+                </div>
+                <div class="form-group">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" placeholder="Dirección completa" required />
+                </div>
+                <div class="form-group">
+                    <label for="tipoCulto">Tipo de Culto</label>
+                    <select id="tipoCulto" required>
+                        <option value="" disabled selected>Selecciona el tipo de culto</option>
+                        <option value="Culto Divino">Culto Divino</option>
+                        <option value="Sociedad de Jóvenes">Sociedad de Jóvenes</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="predicacionSeleccionada">Sermón a predicar</label>
+                    <select id="predicacionSeleccionada" required>
+                        <option value="" disabled selected>Selecciona un sermón</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fecha">Fecha y Hora</label>
+                    <input type="datetime-local" id="fecha" required />
+                </div>
+                <button type="submit" class="primary-btn"><i class="fas fa-calendar-plus"></i> Programar predicación</button>
+            </form>
+        </div>
+
+        <div class="footer">Desarrollado para el ministerio de predicación - 2025</div>
+    </div>
+
+    <div id="fileModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Visualizador de Documento</h3>
+                <div class="modal-actions">
+                    <a id="download-link" href="#" class="btn-accion primary-btn" download><i class="fas fa-download"></i> Descargar</a>
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="file-viewer"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            const bibliotecaForm = document.getElementById('bibliotecaForm');
+            const agendaForm = document.getElementById('agendaForm');
+            const listaBiblioteca = document.getElementById('lista-biblioteca');
+            const listaPredicaciones = document.getElementById('lista-predicaciones');
+            const selectPredicacion = document.getElementById('predicacionSeleccionada');
+            
+            const fileModal = document.getElementById('fileModal');
+            const fileViewer = document.getElementById('file-viewer');
+            const modalTitle = document.getElementById('modal-title');
+            const downloadLink = document.getElementById('download-link');
+
+            const STORAGE_KEY_BIBLIOTECA = 'biblioteca_predicaciones';
+            const STORAGE_KEY_AGENDA = 'predicaciones_programadas';
+
+            let biblioteca = JSON.parse(localStorage.getItem(STORAGE_KEY_BIBLIOTECA)) || [];
+            let agenda = JSON.parse(localStorage.getItem(STORAGE_KEY_AGENDA)) || [];
+
+            function guardarDatos() {
+                localStorage.setItem(STORAGE_KEY_BIBLIOTECA, JSON.stringify(biblioteca));
+                localStorage.setItem(STORAGE_KEY_AGENDA, JSON.stringify(agenda));
+            }
+
+            function ordenarAgenda() {
+                agenda.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            }
+
+            function openModal(documentUrl, fileName) {
+                fileViewer.src = documentUrl;
+                modalTitle.textContent = fileName;
+                downloadLink.href = documentUrl;
+                downloadLink.download = fileName;
+                fileModal.classList.add('active');
+            }
+
+            window.closeModal = () => {
+                fileModal.classList.remove('active');
+                fileViewer.src = ''; // Limpiar el iframe para liberar recursos
+                modalTitle.textContent = "Visualizador de Documento";
+            };
+
+            function renderizarBiblioteca() {
+                listaBiblioteca.innerHTML = '';
+                if (biblioteca.length === 0) {
+                    listaBiblioteca.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-book"></i>
+                            <p>No hay sermones en la biblioteca. ¡Añade uno!</p>
+                        </div>
+                    `;
+                } else {
+                    biblioteca.forEach((sermon, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                            <h3>${sermon.tema}</h3>
+                            <div class="info">
+                                <i class="fas fa-file-alt"></i>
+                                <p><strong>Documento:</strong>
+                                    ${sermon.documento
+                                        ? `<a href="#" class="btn-link view-file-link" data-url="${sermon.documento}" data-name="${sermon.nombreArchivo}">Ver ${sermon.nombreArchivo}</a>`
+                                        : 'No adjuntado'}
+                                </p>
+                            </div>
+                            <div class="acciones">
+                                <button class="btn-accion btn-eliminar" data-index="${index}"><i class="fas fa-trash"></i> Eliminar</button>
+                            </div>
+                        `;
+                        listaBiblioteca.appendChild(card);
+                    });
+                }
+                
+                selectPredicacion.innerHTML = '<option value="" disabled selected>Selecciona un sermón</option>';
+                biblioteca.forEach((sermon, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = sermon.tema;
+                    selectPredicacion.appendChild(option);
+                });
+            }
+
+            function renderizarAgenda() {
+                ordenarAgenda();
+                listaPredicaciones.innerHTML = '';
+                
+                if (agenda.length === 0) {
+                    listaPredicaciones.innerHTML = `
+                        <div class="empty-state">
+                            <i class="far fa-clipboard"></i>
+                            <p>No hay predicaciones programadas. ¡Añade una!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                agenda.forEach((pred, index) => {
+                    let tipoCultoIcon = '';
+                    if (pred.tipoCulto === 'Culto Divino') {
+                        tipoCultoIcon = '<i class="fas fa-cross"></i>';
+                    } else if (pred.tipoCulto === 'Sociedad de Jóvenes') {
+                        tipoCultoIcon = '<i class="fas fa-users"></i>';
+                    } else {
+                        tipoCultoIcon = '<i class="fas fa-question-circle"></i>';
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${pred.sermon.tema}</h3>
+                        <div class="info"><i class="fas fa-church"></i><p><strong>Iglesia:</strong> ${pred.iglesia}</p></div>
+                        <div class="info"><i class="fas fa-map-marker-alt"></i><p><strong>Dirección:</strong> ${pred.direccion}</p></div>
+                        <div class="info">${tipoCultoIcon}<p><strong>Tipo de culto:</strong> ${pred.tipoCulto}</p></div>
+                        <div class="info"><i class="fas fa-calendar-alt"></i><p><strong>Fecha:</strong> ${new Date(pred.fecha).toLocaleString('es-ES', {
+                            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        })}</p></div>
+                        <div class="info">
+                            <i class="fas fa-file-alt"></i>
+                            <p><strong>Documento:</strong>
+                                ${pred.sermon.documento
+                                    ? `<a href="#" class="btn-link view-file-link" data-url="${pred.sermon.documento}" data-name="${pred.sermon.nombreArchivo}">Ver ${pred.sermon.nombreArchivo}</a>`
+                                    : 'No adjuntado'}
+                            </p>
+                        </div>
+                        <div class="acciones">
+                            <button class="btn-accion btn-finalizar" data-index="${index}"><i class="fas fa-check"></i> Finalizado</button>
+                        </div>
+                    `;
+                    listaPredicaciones.appendChild(card);
+                });
+            }
+
+            function programarNotificacion(pred) {
+                if (!('Notification' in window) || Notification.permission !== 'granted') {
+                    console.log("Notificaciones no soportadas o permiso no concedido.");
+                    return;
+                }
+                const fechaPredicacion = new Date(pred.fecha);
+                const ahora = new Date();
+                const tiempoAntes = fechaPredicacion.getTime() - ahora.getTime() - (24 * 60 * 60 * 1000); // 1 día antes
+                if (tiempoAntes > 0) {
+                    setTimeout(() => {
+                        new Notification(`📢 Recordatorio de predicación`, {
+                            body: `Tipo: ${pred.tipoCulto}\nTema: ${pred.sermon.tema}\nIglesia: ${pred.iglesia}\nFecha: ${new Date(pred.fecha).toLocaleString('es-ES')}`,
+                            icon: 'https://cdn-icons-png.flaticon.com/512/3652/3652191.png'
+                        });
+                    }, tiempoAntes);
+                }
+            }
+            
+            // Lógica para cambiar de pestaña
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    const targetTab = document.getElementById(tab.dataset.tab);
+                    targetTab.classList.add('active');
+                    
+                    if (tab.dataset.tab === 'proximas') {
+                        renderizarAgenda();
+                    } else if (tab.dataset.tab === 'biblioteca') {
+                        renderizarBiblioteca();
+                    }
+                });
+            });
+
+            // Evento para guardar un nuevo sermón en la biblioteca
+            bibliotecaForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const tema = document.getElementById('sermonTema').value.trim();
+                const archivo = document.getElementById('sermonDocumento').files[0];
+                
+                if (!tema) {
+                    alert('Por favor, ingresa el tema del sermón.');
+                    return;
+                }
+                
+                const nuevoSermon = { tema: tema, documento: null, nombreArchivo: null };
+
+                if (archivo) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        nuevoSermon.documento = e.target.result;
+                        nuevoSermon.nombreArchivo = archivo.name;
+                        biblioteca.push(nuevoSermon);
+                        guardarDatos();
+                        renderizarBiblioteca();
+                        bibliotecaForm.reset();
+                        alert(`El sermón "${tema}" con el archivo adjunto se ha guardado exitosamente.`);
+                    };
+                    reader.readAsDataURL(archivo);
+                } else {
+                    biblioteca.push(nuevoSermon);
+                    guardarDatos();
+                    renderizarBiblioteca();
+                    bibliotecaForm.reset();
+                    alert(`El sermón "${tema}" se ha guardado exitosamente sin archivo adjunto.`);
+                }
+            });
+
+            // Evento para los clics en la lista de la biblioteca
+            listaBiblioteca.addEventListener('click', (e) => {
+                const button = e.target.closest('.btn-eliminar');
+                if (button) {
+                    const index = button.dataset.index;
+                    if (confirm(`¿Estás seguro de que quieres eliminar el sermón "${biblioteca[index].tema}"?`)) {
+                        biblioteca.splice(index, 1);
+                        guardarDatos();
+                        renderizarBiblioteca();
+                    }
+                }
+                const viewLink = e.target.closest('.view-file-link');
+                if (viewLink) {
+                    e.preventDefault();
+                    const documentUrl = viewLink.dataset.url;
+                    const fileName = viewLink.dataset.name;
+                    openModal(documentUrl, fileName);
+                }
+            });
+            
+            // Evento para los clics en la lista de predicaciones
+            listaPredicaciones.addEventListener('click', (e) => {
+                const viewLink = e.target.closest('.view-file-link');
+                if (viewLink) {
+                    e.preventDefault();
+                    const documentUrl = viewLink.dataset.url;
+                    const fileName = viewLink.dataset.name;
+                    openModal(documentUrl, fileName);
+                }
+                const finalizadoBtn = e.target.closest('.btn-finalizar');
+                if (finalizadoBtn) {
+                    const index = finalizadoBtn.dataset.index;
+                    if (confirm(`¿Estás seguro de que quieres marcar como finalizada la predicación del tema "${agenda[index].sermon.tema}" en la iglesia "${agenda[index].iglesia}"?`)) {
+                        agenda.splice(index, 1);
+                        guardarDatos();
+                        renderizarAgenda();
+                    }
+                }
+            });
+
+            // Evento para programar una nueva predicación
+            agendaForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const sermonIndex = selectPredicacion.value;
+                const tipoCulto = document.getElementById('tipoCulto').value;
+                
+                if (sermonIndex === "" || !agendaForm.iglesia.value || !agendaForm.direccion.value || !agendaForm.fecha.value || tipoCulto === "") {
+                    alert('Por favor, completa todos los campos.');
+                    return;
+                }
+                
+                const sermonSeleccionado = biblioteca[sermonIndex];
+                const nuevaPred = {
+                    iglesia: agendaForm.iglesia.value.trim(),
+                    direccion: agendaForm.direccion.value.trim(),
+                    fecha: agendaForm.fecha.value,
+                    tipoCulto: tipoCulto,
+                    sermon: sermonSeleccionado
+                };
+                
+                agenda.push(nuevaPred);
+                guardarDatos();
+                programarNotificacion(nuevaPred);
+                renderizarAgenda();
+                agendaForm.reset();
+                selectPredicacion.value = "";
+                document.getElementById('tipoCulto').value = "";
+                
+                document.querySelector('.tab-button[data-tab="proximas"]').click();
+            });
+
+            // Pedir permiso para notificaciones al cargar
+            if ('Notification' in window) {
+                if (Notification.permission !== 'granted') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            console.log("Permiso de notificaciones concedido.");
+                            agenda.forEach(programarNotificacion);
+                        }
+                    });
+                } else {
+                    agenda.forEach(programarNotificacion);
+                }
+            }
+            
+            // Cargar la primera pestaña al inicio
+            renderizarAgenda();
+            renderizarBiblioteca();
+        });
+    </script>
+</body>
+</html>
