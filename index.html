@@ -452,6 +452,18 @@
                     <input type="text" id="sermonTema" placeholder="Ej. El Buen Samaritano" required />
                 </div>
                 <div class="form-group">
+                    <label for="himnoInicial">Himno o Coro inicial</label>
+                    <input type="text" id="himnoInicial" placeholder="Ej. Himno 100 'Cuan Grande es Él'" />
+                </div>
+                <div class="form-group">
+                    <label for="lecturaClave">Lectura clave</label>
+                    <input type="text" id="lecturaClave" placeholder="Ej. Juan 3:16" />
+                </div>
+                <div class="form-group">
+                    <label for="himnoFinal">Himno o Coro final</label>
+                    <input type="text" id="himnoFinal" placeholder="Ej. Coro 'Soy Bautizado'" />
+                </div>
+                <div class="form-group">
                     <label for="sermonDocumento">Adjuntar documentos</label>
                     <input type="file" id="sermonDocumento" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" multiple />
                     <small>Puedes seleccionar múltiples archivos. Se recomienda usar PDF, TXT o imágenes para una mejor visualización.</small>
@@ -534,6 +546,12 @@
             const editSermonIndex = document.getElementById('editSermonIndex');
             const editAgendaIndex = document.getElementById('editAgendaIndex');
 
+            const sermonTemaInput = document.getElementById('sermonTema');
+            const himnoInicialInput = document.getElementById('himnoInicial');
+            const lecturaClaveInput = document.getElementById('lecturaClave');
+            const himnoFinalInput = document.getElementById('himnoFinal');
+            const sermonDocumentoInput = document.getElementById('sermonDocumento');
+
             const archivosActualesDiv = document.getElementById('archivos-actuales');
             const listaArchivosExistentes = document.getElementById('lista-archivos-existentes');
 
@@ -584,6 +602,7 @@
                     biblioteca.forEach((sermon, index) => {
                         const card = document.createElement('div');
                         card.className = 'card';
+                        
                         let documentosHtml = '';
                         if (sermon.archivos && sermon.archivos.length > 0) {
                             documentosHtml = `<p><strong>Documentos:</strong></p><div class="document-list">`;
@@ -603,6 +622,9 @@
                         
                         card.innerHTML = `
                             <h3>${sermon.tema}</h3>
+                            <div class="info"><i class="fas fa-music"></i><p><strong>Himno Inicial:</strong> ${sermon.himnoInicial || 'N/A'}</p></div>
+                            <div class="info"><i class="fas fa-bible"></i><p><strong>Lectura Clave:</strong> ${sermon.lecturaClave || 'N/A'}</p></div>
+                            <div class="info"><i class="fas fa-music"></i><p><strong>Himno Final:</strong> ${sermon.himnoFinal || 'N/A'}</p></div>
                             <div class="info">
                                 ${documentosHtml}
                             </div>
@@ -675,6 +697,9 @@
                         <div class="info"><i class="fas fa-calendar-alt"></i><p><strong>Fecha:</strong> ${new Date(pred.fecha).toLocaleString('es-ES', {
                             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                         })}</p></div>
+                        <div class="info"><i class="fas fa-music"></i><p><strong>Himno Inicial:</strong> ${pred.sermon.himnoInicial || 'N/A'}</p></div>
+                        <div class="info"><i class="fas fa-bible"></i><p><strong>Lectura Clave:</strong> ${pred.sermon.lecturaClave || 'N/A'}</p></div>
+                        <div class="info"><i class="fas fa-music"></i><p><strong>Himno Final:</strong> ${pred.sermon.himnoFinal || 'N/A'}</p></div>
                         <div class="info">
                             ${documentosHtml}
                         </div>
@@ -740,8 +765,11 @@
             // Evento para guardar o editar un sermón en la biblioteca
             bibliotecaForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const tema = document.getElementById('sermonTema').value.trim();
-                const archivosNuevos = document.getElementById('sermonDocumento').files;
+                const tema = sermonTemaInput.value.trim();
+                const himnoInicial = himnoInicialInput.value.trim();
+                const lecturaClave = lecturaClaveInput.value.trim();
+                const himnoFinal = himnoFinalInput.value.trim();
+                const archivosNuevos = sermonDocumentoInput.files;
                 const index = parseInt(editSermonIndex.value);
                 
                 if (!tema) {
@@ -759,7 +787,10 @@
                 const processFiles = (filesToProcess, processedFiles = []) => {
                     if (filesToProcess.length === 0) {
                         const nuevoSermon = { 
-                            tema: tema, 
+                            tema: tema,
+                            himnoInicial: himnoInicial,
+                            lecturaClave: lecturaClave,
+                            himnoFinal: himnoFinal,
                             archivos: archivosExistentes.concat(processedFiles)
                         };
 
@@ -809,10 +840,13 @@
                     const index = editButton.dataset.index;
                     const sermonToEdit = biblioteca[index];
                     
-                    document.getElementById('sermonTema').value = sermonToEdit.tema;
+                    sermonTemaInput.value = sermonToEdit.tema;
+                    himnoInicialInput.value = sermonToEdit.himnoInicial || '';
+                    lecturaClaveInput.value = sermonToEdit.lecturaClave || '';
+                    himnoFinalInput.value = sermonToEdit.himnoFinal || '';
                     editSermonIndex.value = index;
                     bibliotecaSubmitBtn.innerHTML = `<i class="fas fa-save"></i> Actualizar sermón`;
-                    document.getElementById('sermonDocumento').value = '';
+                    sermonDocumentoInput.value = '';
                     
                     listaArchivosExistentes.innerHTML = '';
                     if (sermonToEdit.archivos && sermonToEdit.archivos.length > 0) {
@@ -844,7 +878,7 @@
                 const deleteButton = e.target.closest('.btn-eliminar-doc');
                 if (deleteButton) {
                     const sermonIndex = parseInt(deleteButton.dataset.sermonIndex);
-                    const fileIndex = parseInt(deleteButton.dataset.file-index);
+                    const fileIndex = parseInt(deleteButton.dataset.fileIndex);
                     
                     if (confirm(`¿Estás seguro de que quieres eliminar el documento "${biblioteca[sermonIndex].archivos[fileIndex].nombreArchivo}"?`)) {
                         biblioteca[sermonIndex].archivos.splice(fileIndex, 1);
