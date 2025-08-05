@@ -49,7 +49,7 @@
             text-align: center;
             margin-bottom: 2rem;
         }
-        
+
         .header .logo {
             max-height: 150px;
             width: auto;
@@ -93,14 +93,14 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .tab-button.active {
             color: var(--primary-dark);
             border-bottom: 3px solid var(--primary);
             margin-bottom: -2px;
             transform: translateY(-2px);
         }
-        
+
         .tab-button i {
             margin-right: 0.5rem;
         }
@@ -112,7 +112,7 @@
         .tab-content.active {
             display: block;
         }
-        
+
         .section-header {
             margin-top: 0;
             margin-bottom: 1.5rem;
@@ -129,7 +129,7 @@
             padding-bottom: 2rem;
             margin-bottom: 2rem;
         }
-        
+
         .form-group {
             display: flex;
             flex-direction: column;
@@ -149,11 +149,16 @@
             font-size: 1rem;
             background: var(--bg);
         }
-        
+
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
         }
 
         button.primary-btn {
@@ -182,7 +187,7 @@
             display: grid;
             gap: 1.5rem;
         }
-        
+
         .card {
             background: var(--bg);
             padding: 1.5rem;
@@ -206,12 +211,12 @@
             font-size: 1.5rem;
             color: var(--primary-dark);
         }
-        
+
         .card p {
             margin: 0;
             color: var(--text-secondary);
         }
-        
+
         .card strong {
             color: var(--text-main);
         }
@@ -227,7 +232,7 @@
             width: 20px;
             text-align: center;
         }
-        
+
         .card .acciones {
             margin-top: 1rem;
             display: flex;
@@ -249,7 +254,7 @@
         .btn-accion:active {
             transform: scale(0.98);
         }
-        
+
         .btn-accion i {
             margin-right: 0.5rem;
         }
@@ -259,7 +264,7 @@
 
         .btn-eliminar { background-color: #d32f2f; }
         .btn-eliminar:hover { background-color: #b71c1c; }
-        
+
         .btn-editar { background-color: #0d47a1; }
         .btn-editar:hover { background-color: #00227c; }
 
@@ -272,11 +277,11 @@
             font-weight: 600;
             cursor: pointer;
         }
-        
+
         .btn-link:hover {
             color: var(--primary);
         }
-        
+
         .document-list {
             margin-top: 0.5rem;
             display: flex;
@@ -293,7 +298,7 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .document-item .btn-eliminar-doc {
             background: none;
             border: none;
@@ -308,7 +313,7 @@
             font-style: italic;
             padding: 2rem 0;
         }
-        
+
         .empty-state i {
             font-size: 3rem;
             margin-bottom: 1rem;
@@ -377,7 +382,7 @@
             display: flex;
             gap: 1rem;
         }
-        
+
         .modal-header .modal-actions button {
             padding: 0.5rem 1rem;
             font-size: 1rem;
@@ -408,6 +413,139 @@
             border: none;
         }
 
+        /* Nuevos estilos para mensajes dinámicos y modal de confirmación */
+        .message-box {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            opacity: 0;
+            visibility: hidden;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s ease-in-out, visibility 0s 0.5s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .message-box.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s ease-in-out;
+        }
+
+        .message-box.success {
+            background-color: #4caf50;
+        }
+
+        .message-box.warning {
+            background-color: #ff9800;
+        }
+
+        .confirm-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s;
+        }
+
+        .confirm-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .confirm-modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 450px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .confirm-modal-content h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .confirm-modal-content p {
+            margin-bottom: 2rem;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .btn-confirm-yes {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .btn-confirm-no {
+            background-color: var(--border);
+            color: var(--text-main);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        
+        .file-upload-container {
+            border: 2px dashed var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .file-input-group {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .file-input-group input[type="file"] {
+            flex-grow: 1;
+            padding: 0.5rem;
+        }
+
+        .file-input-group .btn-eliminar-file {
+            background: none;
+            border: none;
+            color: #d32f2f;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1.5rem;
@@ -421,6 +559,12 @@
             .tab-button {
                 flex-grow: 1;
                 font-size: 0.9rem;
+            }
+            .message-box {
+                width: 90%;
+                text-align: center;
+                flex-direction: column;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -436,6 +580,18 @@
             <button class="tab-button active" data-tab="proximas"><i class="fas fa-calendar-check"></i> Próximas</button>
             <button class="tab-button" data-tab="biblioteca"><i class="fas fa-book-open"></i> Biblioteca</button>
             <button class="tab-button" data-tab="agendar"><i class="fas fa-plus-circle"></i> Agendar</button>
+        </div>
+
+        <div id="message-box" class="message-box"></div>
+        <div id="confirmModal" class="confirm-modal-overlay">
+            <div class="confirm-modal-content">
+                <h3 id="confirm-title">¿Estás seguro?</h3>
+                <p id="confirm-message">Esta acción no se puede deshacer.</p>
+                <div class="confirm-actions">
+                    <button id="confirm-no" class="btn-confirm-no">Cancelar</button>
+                    <button id="confirm-yes" class="btn-confirm-yes">Confirmar</button>
+                </div>
+            </div>
         </div>
 
         <div id="proximas" class="tab-content active">
@@ -463,11 +619,14 @@
                     <label for="himnoFinal">Himno o Coro final</label>
                     <input type="text" id="himnoFinal" placeholder="Ej. Coro 'Soy Bautizado'" />
                 </div>
+
                 <div class="form-group">
-                    <label for="sermonDocumento">Adjuntar documentos</label>
-                    <input type="file" id="sermonDocumento" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" multiple />
-                    <small>Puedes seleccionar múltiples archivos. Se recomienda usar PDF, TXT o imágenes para una mejor visualización.</small>
+                    <label>Adjuntar documentos (máximo 3)</label>
+                    <div id="file-upload-list" class="file-upload-list">
+                        </div>
+                    <button type="button" id="add-file-btn" class="primary-btn"><i class="fas fa-plus"></i> Agregar archivo</button>
                 </div>
+
                 <div id="archivos-actuales" style="margin-top: 1rem; display: none;">
                     <p><strong>Archivos actuales:</strong></p>
                     <div id="lista-archivos-existentes" class="document-list"></div>
@@ -534,7 +693,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const tabs = document.querySelectorAll('.tab-button');
             const tabContents = document.querySelectorAll('.tab-content');
-            
+
             const bibliotecaForm = document.getElementById('bibliotecaForm');
             const agendaForm = document.getElementById('agendaForm');
             const listaBiblioteca = document.getElementById('lista-biblioteca');
@@ -550,7 +709,9 @@
             const himnoInicialInput = document.getElementById('himnoInicial');
             const lecturaClaveInput = document.getElementById('lecturaClave');
             const himnoFinalInput = document.getElementById('himnoFinal');
-            const sermonDocumentoInput = document.getElementById('sermonDocumento');
+            
+            const fileUploadList = document.getElementById('file-upload-list');
+            const addFileBtn = document.getElementById('add-file-btn');
 
             const archivosActualesDiv = document.getElementById('archivos-actuales');
             const listaArchivosExistentes = document.getElementById('lista-archivos-existentes');
@@ -560,6 +721,13 @@
             const modalTitle = document.getElementById('modal-title');
             const downloadLink = document.getElementById('download-link');
 
+            const messageBox = document.getElementById('message-box');
+            const confirmModal = document.getElementById('confirmModal');
+            const confirmTitle = document.getElementById('confirm-title');
+            const confirmMessage = document.getElementById('confirm-message');
+            const confirmYesBtn = document.getElementById('confirm-yes');
+            const confirmNoBtn = document.getElementById('confirm-no');
+
             const STORAGE_KEY_BIBLIOTECA = 'biblioteca_predicaciones';
             const STORAGE_KEY_AGENDA = 'predicaciones_programadas';
 
@@ -567,6 +735,44 @@
 
             let biblioteca = JSON.parse(localStorage.getItem(STORAGE_KEY_BIBLIOTECA)) || [];
             let agenda = JSON.parse(localStorage.getItem(STORAGE_KEY_AGENDA)) || [];
+
+            // Función para mostrar mensajes dinámicos
+            function showMessage(message, type) {
+                messageBox.innerHTML = '';
+                const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
+                messageBox.innerHTML = `${icon}<span>${message}</span>`;
+                messageBox.className = `message-box show ${type}`;
+                setTimeout(() => {
+                    messageBox.className = 'message-box';
+                }, 5000);
+            }
+            
+            // Función para mostrar un modal de confirmación
+            function showConfirm(title, message, onConfirm) {
+                confirmTitle.textContent = title;
+                confirmMessage.textContent = message;
+                confirmModal.classList.add('active');
+
+                const handleConfirm = () => {
+                    onConfirm();
+                    hideConfirm();
+                    confirmYesBtn.removeEventListener('click', handleConfirm);
+                    confirmNoBtn.removeEventListener('click', handleCancel);
+                };
+                
+                const handleCancel = () => {
+                    hideConfirm();
+                    confirmYesBtn.removeEventListener('click', handleConfirm);
+                    confirmNoBtn.removeEventListener('click', handleCancel);
+                };
+
+                confirmYesBtn.addEventListener('click', handleConfirm);
+                confirmNoBtn.addEventListener('click', handleCancel);
+            }
+
+            function hideConfirm() {
+                confirmModal.classList.remove('active');
+            }
 
             function getStorageSize() {
                 let total = 0;
@@ -587,7 +793,7 @@
                 agenda.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
             }
 
-            function openModal(documentUrl, fileName) {
+            window.openModal = (documentUrl, fileName) => {
                 fileViewer.src = documentUrl;
                 modalTitle.textContent = fileName;
                 downloadLink.href = documentUrl;
@@ -614,14 +820,14 @@
                     biblioteca.forEach((sermon, index) => {
                         const card = document.createElement('div');
                         card.className = 'card';
-                        
+
                         let documentosHtml = '';
                         if (sermon.archivos && sermon.archivos.length > 0) {
                             documentosHtml = `<p><strong>Documentos:</strong></p><div class="document-list">`;
                             sermon.archivos.forEach(archivo => {
                                 documentosHtml += `
                                     <div class="document-item">
-                                        <a href="#" class="btn-link view-file-link" data-url="${archivo.documento}" data-name="${archivo.nombreArchivo}">
+                                        <a href="#" class="btn-link view-file-link" onclick="openModal('${archivo.documento}', '${archivo.nombreArchivo}')">
                                             <i class="fas fa-file-alt"></i> ${archivo.nombreArchivo}
                                         </a>
                                     </div>
@@ -631,7 +837,7 @@
                         } else {
                             documentosHtml = `<p><strong>Documentos:</strong> No adjuntados</p>`;
                         }
-                        
+
                         card.innerHTML = `
                             <h3>${sermon.tema}</h3>
                             <div class="info"><i class="fas fa-music"></i><p><strong>Himno Inicial:</strong> ${sermon.himnoInicial || 'N/A'}</p></div>
@@ -648,7 +854,7 @@
                         listaBiblioteca.appendChild(card);
                     });
                 }
-                
+
                 selectPredicacion.innerHTML = '<option value="" disabled selected>Selecciona un sermón</option>';
                 biblioteca.forEach((sermon, index) => {
                     const option = document.createElement('option');
@@ -661,7 +867,7 @@
             function renderizarAgenda() {
                 ordenarAgenda();
                 listaPredicaciones.innerHTML = '';
-                
+
                 if (agenda.length === 0) {
                     listaPredicaciones.innerHTML = `
                         <div class="empty-state">
@@ -688,7 +894,7 @@
                         pred.sermon.archivos.forEach(archivo => {
                             documentosHtml += `
                                 <div class="document-item">
-                                    <a href="#" class="btn-link view-file-link" data-url="${archivo.documento}" data-name="${archivo.nombreArchivo}">
+                                    <a href="#" class="btn-link view-file-link" onclick="openModal('${archivo.documento}', '${archivo.nombreArchivo}')">
                                         <i class="fas fa-file-alt"></i> ${archivo.nombreArchivo}
                                     </a>
                                 </div>
@@ -723,7 +929,7 @@
                     listaPredicaciones.appendChild(card);
                 });
             }
-            
+
             function programarNotificacion(pred) {
                 if (!('Notification' in window) || Notification.permission !== 'granted') {
                     console.log("Notificaciones no soportadas o permiso no concedido.");
@@ -748,25 +954,53 @@
                 bibliotecaSubmitBtn.innerHTML = `<i class="fas fa-folder-plus"></i> Guardar en biblioteca`;
                 archivosActualesDiv.style.display = 'none';
                 listaArchivosExistentes.innerHTML = '';
+                fileUploadList.innerHTML = '';
+                addFileBtn.style.display = 'inline-flex';
             }
-            
+
+            function addFileInput() {
+                if (fileUploadList.children.length >= 3) {
+                    addFileBtn.style.display = 'none';
+                    return;
+                }
+                const newId = `sermonDocumento${Date.now()}`;
+                const fileInputGroup = document.createElement('div');
+                fileInputGroup.className = 'file-input-group';
+                fileInputGroup.innerHTML = `
+                    <input type="file" id="${newId}" class="sermon-documento-input" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png">
+                    <button type="button" class="btn-eliminar-file">&times;</button>
+                `;
+                fileUploadList.appendChild(fileInputGroup);
+                addFileBtn.style.display = fileUploadList.children.length >= 3 ? 'none' : 'inline-flex';
+            }
+
+            addFileBtn.addEventListener('click', () => {
+                addFileInput();
+            });
+
+            fileUploadList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('btn-eliminar-file')) {
+                    e.target.closest('.file-input-group').remove();
+                    addFileBtn.style.display = 'inline-flex';
+                }
+            });
+
             // Lógica para cambiar de pestaña
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     tabs.forEach(item => item.classList.remove('active'));
                     tabContents.forEach(content => content.classList.remove('active'));
-                    
+
                     tab.classList.add('active');
                     const targetTab = document.getElementById(tab.dataset.tab);
                     targetTab.classList.add('active');
-                    
+
                     if (tab.dataset.tab === 'proximas') {
                         renderizarAgenda();
                     } else if (tab.dataset.tab === 'biblioteca') {
                         renderizarBiblioteca();
                         resetBibliotecaForm();
                     } else if (tab.dataset.tab === 'agendar') {
-                        // Resetea el formulario de agendar cuando se cambia a la pestaña
                         agendaForm.reset();
                         editAgendaIndex.value = -1;
                         agendaSubmitBtn.innerHTML = `<i class="fas fa-calendar-plus"></i> Programar predicación`;
@@ -775,105 +1009,101 @@
             });
 
             // Evento para guardar o editar un sermón en la biblioteca
-            bibliotecaForm.addEventListener('submit', (e) => {
+            bibliotecaForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const tema = sermonTemaInput.value.trim();
                 const himnoInicial = himnoInicialInput.value.trim();
                 const lecturaClave = lecturaClaveInput.value.trim();
                 const himnoFinal = himnoFinalInput.value.trim();
-                const archivosNuevos = sermonDocumentoInput.files;
-                const index = parseInt(editSermonIndex.value);
                 
+                const index = parseInt(editSermonIndex.value);
+
                 if (!tema) {
-                    alert('Por favor, ingresa el tema del sermón.');
+                    showMessage('Por favor, ingresa el tema del sermón.', 'warning');
                     return;
                 }
-                
+
                 let archivosExistentes = [];
                 if (index !== -1) {
                     archivosExistentes = biblioteca[index].archivos || [];
                 }
                 
-                let archivosAprocesar = Array.from(archivosNuevos);
+                const nuevosArchivos = Array.from(document.querySelectorAll('.sermon-documento-input'))
+                                            .map(input => input.files[0])
+                                            .filter(file => file);
                 
-                const processFiles = (filesToProcess, processedFiles = []) => {
-                    if (filesToProcess.length === 0) {
-                        const nuevoSermon = { 
-                            tema: tema,
-                            himnoInicial: himnoInicial,
-                            lecturaClave: lecturaClave,
-                            himnoFinal: himnoFinal,
-                            archivos: archivosExistentes.concat(processedFiles)
-                        };
+                if (archivosExistentes.length + nuevosArchivos.length > 3) {
+                    showMessage('Solo puedes adjuntar un máximo de 3 archivos en total.', 'warning');
+                    return;
+                }
 
-                        if (index !== -1) {
-                            biblioteca[index] = nuevoSermon;
-                            alert(`El sermón "${tema}" se ha actualizado exitosamente.`);
-                        } else {
-                            biblioteca.push(nuevoSermon);
-                            alert(`El sermón "${tema}" se ha guardado exitosamente.`);
-                        }
-                        
-                        guardarDatos();
-                        renderizarBiblioteca();
-                        resetBibliotecaForm();
-                        return;
-                    }
-
-                    const archivo = filesToProcess.shift();
-                    const reader = new FileReader();
-
-                    reader.onload = (e) => {
-                        const nuevaEntrada = JSON.stringify(biblioteca.concat([{
-                            tema: tema,
-                            himnoInicial: himnoInicial,
-                            lecturaClave: lecturaClave,
-                            himnoFinal: himnoFinal,
-                            archivos: [{ documento: e.target.result, nombreArchivo: archivo.name }]
-                        }]));
-
-                        if (getStorageSize() + nuevaEntrada.length * 2 > MAX_LOCAL_STORAGE_SIZE) {
-                            alert(`Advertencia: El archivo "${archivo.name}" es demasiado grande para guardar. El sermón se guardará sin este archivo para evitar que la aplicación se bloquee. Puedes añadirlo más tarde.`);
-                            processFiles(filesToProcess, processedFiles);
-                        } else {
-                            processedFiles.push({
+                const leerArchivo = (archivo) => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            resolve({
                                 documento: e.target.result,
                                 nombreArchivo: archivo.name
                             });
-                            processFiles(filesToProcess, processedFiles);
-                        }
-                    };
-                    reader.readAsDataURL(archivo);
+                        };
+                        reader.readAsDataURL(archivo);
+                    });
                 };
 
-                processFiles(archivosAprocesar);
+                const nuevosArchivosProcesados = await Promise.all(nuevosArchivos.map(leerArchivo));
+
+                const sermonConArchivos = {
+                    tema,
+                    himnoInicial,
+                    lecturaClave,
+                    himnoFinal,
+                    archivos: [...archivosExistentes, ...nuevosArchivosProcesados]
+                };
+
+                if (index !== -1) {
+                    biblioteca[index] = sermonConArchivos;
+                    showMessage(`El sermón "${tema}" se ha actualizado exitosamente.`, 'success');
+                } else {
+                    biblioteca.push(sermonConArchivos);
+                    showMessage(`El sermón "${tema}" se ha guardado exitosamente.`, 'success');
+                }
+
+                guardarDatos();
+                renderizarBiblioteca();
+                resetBibliotecaForm();
             });
 
             // Evento para los clics en la lista de la biblioteca
             listaBiblioteca.addEventListener('click', (e) => {
                 const button = e.target.closest('.btn-eliminar');
                 const editButton = e.target.closest('.btn-editar');
-                const viewLink = e.target.closest('.view-file-link');
 
                 if (button) {
                     const index = button.dataset.index;
-                    if (confirm(`¿Estás seguro de que quieres eliminar el sermón "${biblioteca[index].tema}"?`)) {
-                        biblioteca.splice(index, 1);
-                        guardarDatos();
-                        renderizarBiblioteca();
-                    }
+                    showConfirm(
+                        'Confirmar eliminación',
+                        `¿Estás seguro de que quieres eliminar el sermón "${biblioteca[index].tema}"? Esta acción no se puede deshacer.`,
+                        () => {
+                            biblioteca.splice(index, 1);
+                            guardarDatos();
+                            renderizarBiblioteca();
+                            showMessage('Sermón eliminado correctamente.', 'success');
+                        }
+                    );
                 } else if (editButton) {
                     const index = editButton.dataset.index;
                     const sermonToEdit = biblioteca[index];
-                    
+
                     sermonTemaInput.value = sermonToEdit.tema;
                     himnoInicialInput.value = sermonToEdit.himnoInicial || '';
                     lecturaClaveInput.value = sermonToEdit.lecturaClave || '';
                     himnoFinalInput.value = sermonToEdit.himnoFinal || '';
                     editSermonIndex.value = index;
                     bibliotecaSubmitBtn.innerHTML = `<i class="fas fa-save"></i> Actualizar sermón`;
-                    sermonDocumentoInput.value = '';
-                    
+
+                    fileUploadList.innerHTML = '';
+                    addFileBtn.style.display = 'inline-flex';
+
                     listaArchivosExistentes.innerHTML = '';
                     if (sermonToEdit.archivos && sermonToEdit.archivos.length > 0) {
                         sermonToEdit.archivos.forEach((archivo, fileIndex) => {
@@ -881,7 +1111,7 @@
                             docItem.className = 'document-item';
                             docItem.innerHTML = `
                                 <span>${archivo.nombreArchivo}</span>
-                                <button class="btn-eliminar-doc" data-sermon-index="${index}" data-file-index="${fileIndex}">&times;</button>
+                                <button type="button" class="btn-eliminar-doc" data-sermon-index="${index}" data-file-index="${fileIndex}">&times;</button>
                             `;
                             listaArchivosExistentes.appendChild(docItem);
                         });
@@ -891,11 +1121,6 @@
                     }
                     
                     document.querySelector('.tab-button[data-tab="biblioteca"]').click();
-                } else if (viewLink) {
-                    e.preventDefault();
-                    const documentUrl = viewLink.dataset.url;
-                    const fileName = viewLink.dataset.name;
-                    openModal(documentUrl, fileName);
                 }
             });
 
@@ -906,29 +1131,34 @@
                     const sermonIndex = parseInt(deleteButton.dataset.sermonIndex);
                     const fileIndex = parseInt(deleteButton.dataset.fileIndex);
                     
-                    if (confirm(`¿Estás seguro de que quieres eliminar el documento "${biblioteca[sermonIndex].archivos[fileIndex].nombreArchivo}"?`)) {
-                        biblioteca[sermonIndex].archivos.splice(fileIndex, 1);
-                        guardarDatos();
-                        // Volver a renderizar la lista de archivos existentes
-                        const sermonToEdit = biblioteca[sermonIndex];
-                        listaArchivosExistentes.innerHTML = '';
-                        if (sermonToEdit.archivos && sermonToEdit.archivos.length > 0) {
-                            sermonToEdit.archivos.forEach((archivo, newFileIndex) => {
-                                const docItem = document.createElement('div');
-                                docItem.className = 'document-item';
-                                docItem.innerHTML = `
-                                    <span>${archivo.nombreArchivo}</span>
-                                    <button class="btn-eliminar-doc" data-sermon-index="${sermonIndex}" data-file-index="${newFileIndex}">&times;</button>
-                                `;
-                                listaArchivosExistentes.appendChild(docItem);
-                            });
-                        } else {
-                            archivosActualesDiv.style.display = 'none';
+                    showConfirm(
+                        'Confirmar eliminación de documento',
+                        `¿Estás seguro de que quieres eliminar el documento "${biblioteca[sermonIndex].archivos[fileIndex].nombreArchivo}"?`,
+                        () => {
+                            biblioteca[sermonIndex].archivos.splice(fileIndex, 1);
+                            guardarDatos();
+                            showMessage('Documento eliminado correctamente.', 'success');
+
+                            const sermonToEdit = biblioteca[sermonIndex];
+                            listaArchivosExistentes.innerHTML = '';
+                            if (sermonToEdit.archivos && sermonToEdit.archivos.length > 0) {
+                                sermonToEdit.archivos.forEach((archivo, newFileIndex) => {
+                                    const docItem = document.createElement('div');
+                                    docItem.className = 'document-item';
+                                    docItem.innerHTML = `
+                                        <span>${archivo.nombreArchivo}</span>
+                                        <button type="button" class="btn-eliminar-doc" data-sermon-index="${sermonIndex}" data-file-index="${newFileIndex}">&times;</button>
+                                    `;
+                                    listaArchivosExistentes.appendChild(docItem);
+                                });
+                            } else {
+                                archivosActualesDiv.style.display = 'none';
+                            }
                         }
-                    }
+                    );
                 }
             });
-            
+
             // Evento para los clics en la lista de predicaciones
             listaPredicaciones.addEventListener('click', (e) => {
                 const viewLink = e.target.closest('.view-file-link');
@@ -942,11 +1172,16 @@
                     openModal(documentUrl, fileName);
                 } else if (finalizadoBtn) {
                     const index = finalizadoBtn.dataset.index;
-                    if (confirm(`¿Estás seguro de que quieres marcar como finalizada la predicación del tema "${agenda[index].sermon.tema}" en la iglesia "${agenda[index].iglesia}"?`)) {
-                        agenda.splice(index, 1);
-                        guardarDatos();
-                        renderizarAgenda();
-                    }
+                    showConfirm(
+                        'Confirmar finalización',
+                        `¿Estás seguro de que quieres marcar como finalizada la predicación del tema "${agenda[index].sermon.tema}" en la iglesia "${agenda[index].iglesia}"? Se eliminará de la agenda.`,
+                        () => {
+                            agenda.splice(index, 1);
+                            guardarDatos();
+                            renderizarAgenda();
+                            showMessage('Predicación finalizada y eliminada de la agenda.', 'success');
+                        }
+                    );
                 } else if (editButton) {
                     const index = editButton.dataset.index;
                     const predToEdit = agenda[index];
@@ -967,12 +1202,12 @@
                 const sermonIndex = selectPredicacion.value;
                 const tipoCulto = document.getElementById('tipoCulto').value;
                 const index = parseInt(editAgendaIndex.value);
-                
+
                 if (sermonIndex === "" || !agendaForm.iglesia.value || !agendaForm.direccion.value || !agendaForm.fecha.value || tipoCulto === "") {
-                    alert('Por favor, completa todos los campos.');
+                    showMessage('Por favor, completa todos los campos.', 'warning');
                     return;
                 }
-                
+
                 const sermonSeleccionado = biblioteca[sermonIndex];
                 const nuevaPred = {
                     iglesia: agendaForm.iglesia.value.trim(),
@@ -981,13 +1216,13 @@
                     tipoCulto: tipoCulto,
                     sermon: sermonSeleccionado
                 };
-                
+
                 if (index !== -1) {
                     agenda[index] = nuevaPred;
-                    alert(`La predicación en "${nuevaPred.iglesia}" ha sido actualizada.`);
+                    showMessage(`La predicación en "${nuevaPred.iglesia}" ha sido actualizada.`, 'success');
                 } else {
                     agenda.push(nuevaPred);
-                    alert(`Predicación para "${nuevaPred.iglesia}" programada exitosamente.`);
+                    showMessage(`Predicación para "${nuevaPred.iglesia}" programada exitosamente.`, 'success');
                 }
 
                 guardarDatos();
@@ -998,7 +1233,7 @@
                 document.getElementById('tipoCulto').value = "";
                 editAgendaIndex.value = -1;
                 agendaSubmitBtn.innerHTML = `<i class="fas fa-calendar-plus"></i> Programar predicación`;
-                
+
                 document.querySelector('.tab-button[data-tab="proximas"]').click();
             });
 
@@ -1015,10 +1250,12 @@
                     agenda.forEach(programarNotificacion);
                 }
             }
-            
+
             // Cargar la primera pestaña al inicio
             renderizarAgenda();
             renderizarBiblioteca();
+            // Agregar el primer campo de archivo al cargar la página
+            addFileInput();
         });
     </script>
 </body>
